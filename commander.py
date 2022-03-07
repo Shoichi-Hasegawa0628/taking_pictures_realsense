@@ -40,7 +40,7 @@ class EnterCommand():
                 if not os.path.exists(DATA_PATH):
                     os.makedirs(DATA_PATH)
 
-                cv2.imwrite(DATA_PATH + "/rgb_{}.png".format(str(step)), cv_rgb_image)
+                cv2.imwrite(DATA_PATH + "/rgb_{}.jpg".format(str(step)), cv_rgb_image)
 
             except Exception as e:
                 rospy.logerr('An error occurred when retrieving the RGB/depth images and camera parameters.')
