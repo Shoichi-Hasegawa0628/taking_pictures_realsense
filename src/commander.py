@@ -2,15 +2,16 @@
 # -*- coding: utf-8 -*-
 
 import rospy
-from sensor_msgs.msg import Image
+from sensor_msgs.msg import Image as ImageMsg
 import cv2
 from cv_bridge import CvBridge, CvBridgeError
 import sys
 import os
 import numpy as np
 import cv_bridge
-
-
+from PIL.Image import Image
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_pdf import PdfPages
 
 
 class EnterCommand():
@@ -32,15 +33,27 @@ class EnterCommand():
             print('The number of capture:{}\n'.format(str(step)))
 
             try:
-                rgb_msg = rospy.wait_for_message("/camera/color/image_raw", Image, timeout=10.0)
+                # rgb_msg = rospy.wait_for_message("/camera/color/image_raw", Image, timeout=10.0)
+                rgb_msg = rospy.wait_for_message("/hsrb/head_rgbd_sensor/rgb/image_raw", ImageMsg, timeout=10.0)
                 cv_rgb_image = self.bridge.imgmsg_to_cv2(rgb_msg, "bgr8")
 
                 # make folder
-                DATA_PATH = "/root/HSR/catkin_ws/src/taking_pictures_realsense/{}".format(object_name)
+                DATA_PATH = "/root/HSR/catkin_ws/src/taking_pictures/data/{}".format(object_name)
                 if not os.path.exists(DATA_PATH):
                     os.makedirs(DATA_PATH)
 
-                cv2.imwrite(DATA_PATH + "/rgb_{}.jpg".format(str(step)), cv_rgb_image)
+                ## 今度
+                # ## OpenCV型 → Pillow型
+                # pil_image = cv_rgb_image.copy()
+                # pil_image = cv2.cvtColor(pil_image, cv2.COLOR_BGR2RGB)
+                # pil_image = Image.fromarray(pil_image)
+                #
+                # ## Pillow型 → PDF
+                # pdf_image = PdfPages(DATA_PATH + "/rgb_{}.pdf".format(str(step)))
+                # pdf_image.savefig(pil_image)
+                # pdf_image.close()
+
+                cv2.imwrite(DATA_PATH + "/rgb_{}.png".format(str(step)), cv_rgb_image)
 
             except Exception as e:
                 rospy.logerr('An error occurred when retrieving the RGB/depth images and camera parameters.')
